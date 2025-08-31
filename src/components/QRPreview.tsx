@@ -1,13 +1,12 @@
 type Props = {
-  qr: string;
+  qrCode: string;
 };
 
-export default function QRPreview({ qr }: { qr: string }) {
+export default function QRPreview({ qrCode }: Props) {
   return (
-    <div style={{ marginTop: 20 }}>
+    <div style={{ marginTop: "2rem" }}>
       <h3>Your Ticket QR:</h3>
-      <img src={qr} alt="Ticket QR" style={{ width: "100%" }} />
+      <img src={qrCode} alt="Ticket QR" style={{ width: "200px" }} />
     </div>
   );
 }
-
