@@ -1,9 +1,18 @@
-export async function createTicket(payload: { name: string; email: string }) {
-  const res = await fetch(`${import.meta.env.VITE_API_URL}/tickets`, {
+export async function createTicket(data: {
+  name: string;
+  id_card_number: string;
+  date_of_birth: string;
+  phone_number: string;
+}) {
+  const res = await fetch(`${import.meta.env.VITE_API_URL}/ticket`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
+    body: JSON.stringify(data),
   });
-  if (!res.ok) throw new Error("Failed to create ticket");
-  return res.json(); // { qr: "data:image/png;base64,..." }
+
+  if (!res.ok) {
+    throw new Error("Failed to create ticket");
+  }
+
+  return await res.json(); // expects { qr: string }
 }
