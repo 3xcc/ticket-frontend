@@ -1,36 +1,33 @@
-import { useState, useEffect } from "react";
-import TicketDetails from "./TicketDetails";
-import { Html5QrcodeScanner } from "html5-qrcode";
+import { useEffect } from 'react'
+import { Html5QrcodeScanner } from 'html5-qrcode'
 
-export default function QRScanner() {
-  const [scannedPayload, setScannedPayload] = useState<any>(null);
+interface QRScannerProps {
+  onScan: (data: string) => void
+}
 
+const QRScanner = ({ onScan }: QRScannerProps) => {
   useEffect(() => {
-    const scanner = new Html5QrcodeScanner("qr-reader", { fps: 10, qrbox: 250 }, false);
+    const scanner = new Html5QrcodeScanner('qr-reader', {
+      fps: 10,
+      qrbox: 250,
+    }, false) // ✅ Fix: add verbose argument here
 
     scanner.render(
-      (decodedText: string) => {
-        try {
-          const parsed = JSON.parse(decodedText);
-          setScannedPayload(parsed);
-        } catch (err) {
-          console.error("Invalid QR payload:", err);
-        }
+      (decodedText) => {
+        onScan(decodedText)
+        scanner.clear()
       },
-      (errorMessage: string) => {
-        console.warn("QR scan error:", errorMessage);
+      (error) => {
+        console.warn('QR scan error:', error)
       }
-    );
+    )
 
     return () => {
-      scanner.clear().catch((err) => console.error("Failed to clear scanner", err));
-    };
-  }, []);
+      scanner.clear().catch(() => {})
+    }
+  }, [onScan])
 
-  return (
-    <div>
-      <div id="qr-reader" style={{ width: "100%" }} />
-      {scannedPayload && <TicketDetails payload={scannedPayload} />}
-    </div>
-  );
+  return <div id="qr-reader" style={{ width: '100%' }} />
 }
+
+export default QRScanner

@@ -16,3 +16,17 @@ export async function createTicket(data: {
 
   return await res.json(); // expects { qr: string }
 }
+
+export async function validateTicket(payload: string) {
+  const res = await fetch(`${import.meta.env.VITE_API_URL}/validate_ticket`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ payload }),
+  });
+
+  if (!res.ok) {
+    throw new Error("Ticket validation failed");
+  }
+
+  return await res.json(); // expects { name, event, status, timestamp? }
+}
