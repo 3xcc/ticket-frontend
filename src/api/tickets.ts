@@ -1,21 +1,25 @@
+const API_BASE = import.meta.env.VITE_API_BASE?.replace(/\/$/, "") || "";
+
 export async function createTicket(data: {
   name: string;
   id_card_number: string;
   date_of_birth: string;
   phone_number: string;
 }) {
-  const res = await fetch(`${import.meta.env.VITE_API_URL}/ticket`, {
+  const res = await fetch(`${API_BASE}/ticket/tickets`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
   });
 
   if (!res.ok) {
-    throw new Error("Failed to create ticket");
+    const errorText = await res.text();
+    throw new Error(`Request failed: ${res.status} ${errorText}`);
   }
 
-  return await res.json(); // expects { qr: string }
+  return res.json();
 }
+
 
 export async function validateTicket(payload: string) {
   const res = await fetch(`${import.meta.env.VITE_API_URL}/validate_ticket`, {
