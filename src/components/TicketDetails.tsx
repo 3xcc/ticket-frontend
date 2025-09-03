@@ -12,7 +12,9 @@ export default function TicketDetails({ data }: { data: Ticket }) {
       <p><strong>Name:</strong> {data.name}</p>
       <p><strong>Event:</strong> {data.event}</p>
       <p><strong>Status:</strong> {data.status}</p>
-      {data.timestamp && <p><strong>Scanned At:</strong> {new Date(data.timestamp).toLocaleString()}</p>}
+      {data.timestamp && (
+  <p><strong>Scanned At:</strong> {new Date(data.timestamp).toLocaleString()}</p>
+)}
     </div>
   )
 }
