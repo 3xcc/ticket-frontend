@@ -1,17 +1,17 @@
-import { useState } from "react";
-import { createTicket } from "../api/tickets";
+import { useState } from "react"
+import { createTicket } from "../api/tickets"
 
 function calculateAge(dob: string): number | null {
-  const birthDate = new Date(dob);
-  if (isNaN(birthDate.getTime())) return null;
+  const birthDate = new Date(dob)
+  if (isNaN(birthDate.getTime())) return null
 
-  const today = new Date();
-  let age = today.getFullYear() - birthDate.getFullYear();
-  const m = today.getMonth() - birthDate.getMonth();
+  const today = new Date()
+  let age = today.getFullYear() - birthDate.getFullYear()
+  const m = today.getMonth() - birthDate.getMonth()
   if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
-    age--;
+    age--
   }
-  return age;
+  return age
 }
 
 export default function Home() {
@@ -20,25 +20,34 @@ export default function Home() {
     id_card_number: "",
     date_of_birth: "",
     phone_number: "",
-  });
+    event: "", // ✅ Added event field
+  })
 
-  const [qrCode, setQrCode] = useState<string | null>(null);
+  const [qrCode, setQrCode] = useState<string | null>(null)
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+    setFormData({ ...formData, [e.target.name]: e.target.value })
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      const response = await createTicket(formData);
-      setQrCode(response.qr);
-    } catch (err) {
-      console.error("Ticket creation failed:", err);
+  e.preventDefault()
+  try {
+    const { name, id_card_number, date_of_birth, phone_number, event } = formData
+    const payload = {
+      name,
+      id_card_number,
+      date_of_birth,
+      phone_number,
+      event
     }
-  };
+    const response = await createTicket(payload)
+    setQrCode(response.qr)
+  } catch (err) {
+    console.error("Ticket creation failed:", err)
+  }
+  }
 
-  const age = calculateAge(formData.date_of_birth);
+  const age = calculateAge(formData.date_of_birth)
 
   return (
     <div style={{ padding: "2rem" }}>
@@ -89,6 +98,15 @@ export default function Home() {
           onChange={handleChange}
           required
         />
+        <input
+          type="text"
+          name="event"
+          placeholder="Event Name"
+          value={formData.event}
+          onChange={handleChange}
+          required
+        />
+
         <button type="submit">Generate QR</button>
       </form>
 
@@ -99,5 +117,5 @@ export default function Home() {
         </div>
       )}
     </div>
-  );
+  )
 }
