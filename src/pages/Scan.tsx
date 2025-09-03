@@ -6,9 +6,12 @@ import { validateTicket } from '../api/tickets'
 type Ticket = {
   name: string
   id_card_number: string
+  date_of_birth: string
   phone_number: string
-  event: string
-  status: string
+  ticket_id: string
+  qr?: string
+  status?: string
+  event?: string
   timestamp?: string
 }
 
