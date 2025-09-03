@@ -15,7 +15,12 @@ export default function TicketDetails({ data }: { data: Ticket }) {
       <p><strong>ID Card/PP Number:</strong> {data.id_card_number}</p>
       <p><strong>Phone Number:</strong> {data.phone_number}</p>
       <p><strong>Event:</strong> {data.event}</p>
-      <p><strong>Status:</strong> {data.status}</p>
+      <p>
+  <strong>Status:</strong>{" "}
+  <span style={{ color: data.status === "already_checked_in" ? "red" : "green" }}>
+    {data.status}
+  </span>
+</p>
       {data.timestamp && (
         <p><strong>Scanned At:</strong> {new Date(data.timestamp).toLocaleString()}</p>
       )}
