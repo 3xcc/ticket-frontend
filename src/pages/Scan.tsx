@@ -3,20 +3,20 @@ import QRScanner from '../components/QRScanner'
 import TicketDetails from '../components/TicketDetails'
 import { validateTicket } from '../api/tickets'
 
-type ScannedTicket = {
+type Ticket = {
   name: string
   id_card_number: string
   date_of_birth: string
   phone_number: string
   ticket_id: string
-  qr?: string
-  status?: string
-  event?: string
-  timestamp?: string
+  qr: string
+  status: string
+  event: string
+  timestamp: string
 }
 
 export default function Scan() {
-  const [ticket, setTicket] = useState<ScannedTicket | null>(null)
+  const [ticket, setTicket] = useState<Ticket | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 
