@@ -53,11 +53,10 @@ export default function Dashboard() {
               <tr key={ticket.ticket_id}>
                 <td>{ticket.name}</td>
                 <td>{ticket.id_card_number}</td>
+                <td>{ticket.date_of_birth}</td>
                 <td>{ticket.phone_number}</td>
                 <td>{ticket.event}</td>
-                <td style={{ color: ticket.status === "already_checked_in" ? "red" : "green" }}>
-                  {ticket.status}
-                </td>
+                <td>{ticket.status}</td>
                 <td>{ticket.timestamp ? new Date(ticket.timestamp).toLocaleString() : "—"}</td>
               </tr>
             ))}
