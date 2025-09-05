@@ -3,11 +3,11 @@ import { useEffect, useState } from "react";
 
 interface Ticket {
   ticket_id: string;
-  name: string;
-  id_card_number: string;
-  date_of_birth: string;
-  phone_number: string;
-  event: string;
+  name: string | null;
+  id_card_number: string | null;
+  date_of_birth: string | null;
+  phone_number: string | null;
+  event: string | null;
   status: string;
   timestamp: string | null;
 }
@@ -29,7 +29,7 @@ export default function Dashboard() {
           throw new Error(`Failed to fetch tickets: ${res.status}`);
         }
         const data: Ticket[] = await res.json();
-        console.log("Tickets from API:", data);
+        console.log("Tickets from API:", data); // ✅ Inspect keys here
         setTickets(data);
       } catch (err: any) {
         console.error(err);
@@ -78,11 +78,11 @@ export default function Dashboard() {
             ) : (
               tickets.map((ticket) => (
                 <tr key={ticket.ticket_id}>
-                  <td style={tdStyle}>{ticket.name}</td>
-                  <td style={tdStyle}>{ticket.id_card_number}</td>
-                  <td style={tdStyle}>{ticket.date_of_birth}</td>
-                  <td style={tdStyle}>{ticket.phone_number}</td>
-                  <td style={tdStyle}>{ticket.event}</td>
+                  <td style={tdStyle}>{ticket.name ?? "—"}</td>
+                  <td style={tdStyle}>{ticket.id_card_number ?? "—"}</td>
+                  <td style={tdStyle}>{ticket.date_of_birth ?? "—"}</td>
+                  <td style={tdStyle}>{ticket.phone_number ?? "—"}</td>
+                  <td style={tdStyle}>{ticket.event ?? "—"}</td>
                   <td style={tdStyle}>{ticket.status}</td>
                   <td style={tdStyle}>
                     {ticket.timestamp
