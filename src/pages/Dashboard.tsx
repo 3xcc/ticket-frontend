@@ -18,7 +18,7 @@ export default function Dashboard() {
   useEffect(() => {
     const fetchTickets = async () => {
       try {
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/tickets/all`)
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/ticket/tickets/all`)
         const data = await res.json()
         setTickets(data)
       } catch (err) {
