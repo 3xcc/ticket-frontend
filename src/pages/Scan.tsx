@@ -26,13 +26,15 @@ export default function Scan() {
       return
     }
 
-    console.log("Scanned QR payload:", qrPayload)
+    const ticketId = qrPayload.trim() // ✅ Clean the payload
+    console.log("Scanned ticket ID:", ticketId)
+
     setLoading(true)
     setError(null)
     setTicket(null)
 
     try {
-      const data = await validateTicket(qrPayload)
+      const data = await validateTicket(ticketId) // ✅ Send clean ID
       console.log("Validation response:", data)
       setTicket(data)
     } catch (e) {
