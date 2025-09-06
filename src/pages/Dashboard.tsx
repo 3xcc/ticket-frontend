@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 
 interface Ticket {
   ticket_id: string;
+  ticket_number: string | null; // ✅ Added ticket_number
   name: string | null;
   id_card_number: string | null;
   date_of_birth: string | null;
@@ -24,9 +25,7 @@ export default function Dashboard() {
     try {
       setLoading(true);
       setError(null);
-      const res = await fetch(
-        `${import.meta.env.VITE_API_URL}/tickets/all`
-      );
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/tickets/all`);
       if (!res.ok) {
         throw new Error(`Failed to fetch tickets: ${res.status}`);
       }
@@ -43,12 +42,12 @@ export default function Dashboard() {
 
   const handleEdit = async (ticket: Ticket) => {
     const newName = prompt("Enter new name", ticket.name || "");
-    if (newName === null) return; // cancelled
+    if (newName === null) return;
     await fetch(`${import.meta.env.VITE_API_URL}/tickets/${ticket.ticket_id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
-        "x-api-key": "your-secret-key" // replace with your actual key if using API key protection
+        "x-api-key": "your-secret-key"
       },
       body: JSON.stringify({ name: newName })
     });
@@ -109,6 +108,7 @@ export default function Dashboard() {
         >
           <thead>
             <tr>
+              <th style={thStyle}>Ticket #</th> {/* ✅ New column */}
               <th style={thStyle}>Name</th>
               <th style={thStyle}>ID Card Number</th>
               <th style={thStyle}>Date of Birth</th>
@@ -122,13 +122,14 @@ export default function Dashboard() {
           <tbody>
             {tickets.length === 0 ? (
               <tr>
-                <td colSpan={8} style={{ textAlign: "center", padding: "1rem" }}>
+                <td colSpan={9} style={{ textAlign: "center", padding: "1rem" }}>
                   No tickets found
                 </td>
               </tr>
             ) : (
               tickets.map((ticket) => (
                 <tr key={ticket.ticket_id}>
+                  <td style={tdStyle}>{ticket.ticket_number ?? "—"}</td> {/* ✅ Display ticket_number */}
                   <td style={tdStyle}>{ticket.name ?? "—"}</td>
                   <td style={tdStyle}>{ticket.id_card_number ?? "—"}</td>
                   <td style={tdStyle}>{ticket.date_of_birth ?? "—"}</td>
