@@ -25,7 +25,7 @@ export default function Dashboard() {
       setLoading(true);
       setError(null);
       const res = await fetch(
-        `${import.meta.env.VITE_API_URL}/ticket/tickets/all`
+        `${import.meta.env.VITE_API_URL}/tickets/all`
       );
       if (!res.ok) {
         throw new Error(`Failed to fetch tickets: ${res.status}`);
@@ -44,7 +44,7 @@ export default function Dashboard() {
   const handleEdit = async (ticket: Ticket) => {
     const newName = prompt("Enter new name", ticket.name || "");
     if (newName === null) return; // cancelled
-    await fetch(`${import.meta.env.VITE_API_URL}/ticket/tickets/${ticket.ticket_id}`, {
+    await fetch(`${import.meta.env.VITE_API_URL}/tickets/${ticket.ticket_id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -57,7 +57,7 @@ export default function Dashboard() {
 
   const handleDelete = async (ticketId: string) => {
     if (!confirm("Are you sure you want to delete this ticket?")) return;
-    await fetch(`${import.meta.env.VITE_API_URL}/ticket/tickets/${ticketId}`, {
+    await fetch(`${import.meta.env.VITE_API_URL}/tickets/${ticketId}`, {
       method: "DELETE",
       headers: {
         "x-api-key": "your-secret-key"
@@ -68,7 +68,7 @@ export default function Dashboard() {
 
   const handleDeleteAll = async () => {
     if (!confirm("Delete ALL tickets? This cannot be undone.")) return;
-    await fetch(`${import.meta.env.VITE_API_URL}/ticket/tickets?confirm=true`, {
+    await fetch(`${import.meta.env.VITE_API_URL}/tickets?confirm=true`, {
       method: "DELETE",
       headers: {
         "x-api-key": "your-secret-key"

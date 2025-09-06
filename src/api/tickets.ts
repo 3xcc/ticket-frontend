@@ -6,7 +6,7 @@ export async function createTicket(data: {
   date_of_birth: string
   phone_number: string
 }) {
-  const res = await fetch(`${API_BASE}/ticket/tickets`, {
+  const res = await fetch(`${API_BASE}/tickets`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
@@ -21,7 +21,7 @@ export async function createTicket(data: {
 }
 
 export async function validateTicket(payload: string) {
-  const res = await fetch(`${API_BASE}/ticket/validate_ticket`, {
+  const res = await fetch(`${API_BASE}/validate_ticket`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ payload }),
