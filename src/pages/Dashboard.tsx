@@ -1,4 +1,3 @@
-// src/pages/Dashboard.tsx
 import { useEffect, useState } from "react";
 
 interface Ticket {
@@ -18,33 +17,84 @@ export default function Dashboard() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchTickets = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        const res = await fetch(
-          `${import.meta.env.VITE_API_URL}/ticket/tickets/all`
-        );
-        if (!res.ok) {
-          throw new Error(`Failed to fetch tickets: ${res.status}`);
-        }
-        const data: Ticket[] = await res.json();
-        console.log("Tickets from API:", data); // ✅ Inspect keys here
-        setTickets(data);
-      } catch (err: any) {
-        console.error(err);
-        setError(err.message || "Error fetching tickets");
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchTickets();
   }, []);
+
+  const fetchTickets = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/ticket/tickets/all`
+      );
+      if (!res.ok) {
+        throw new Error(`Failed to fetch tickets: ${res.status}`);
+      }
+      const data: Ticket[] = await res.json();
+      console.log("Tickets from API:", data);
+      setTickets(data);
+    } catch (err: any) {
+      console.error(err);
+      setError(err.message || "Error fetching tickets");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleEdit = async (ticket: Ticket) => {
+    const newName = prompt("Enter new name", ticket.name || "");
+    if (newName === null) return; // cancelled
+    await fetch(`${import.meta.env.VITE_API_URL}/ticket/tickets/${ticket.ticket_id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": "your-secret-key" // replace with your actual key if using API key protection
+      },
+      body: JSON.stringify({ name: newName })
+    });
+    fetchTickets();
+  };
+
+  const handleDelete = async (ticketId: string) => {
+    if (!confirm("Are you sure you want to delete this ticket?")) return;
+    await fetch(`${import.meta.env.VITE_API_URL}/ticket/tickets/${ticketId}`, {
+      method: "DELETE",
+      headers: {
+        "x-api-key": "your-secret-key"
+      }
+    });
+    fetchTickets();
+  };
+
+  const handleDeleteAll = async () => {
+    if (!confirm("Delete ALL tickets? This cannot be undone.")) return;
+    await fetch(`${import.meta.env.VITE_API_URL}/ticket/tickets?confirm=true`, {
+      method: "DELETE",
+      headers: {
+        "x-api-key": "your-secret-key"
+      }
+    });
+    fetchTickets();
+  };
 
   return (
     <div style={{ padding: "1rem" }}>
       <h1>Admin Dashboard</h1>
+
+      <button
+        onClick={handleDeleteAll}
+        style={{
+          marginBottom: "1rem",
+          color: "white",
+          background: "red",
+          padding: "0.5rem 1rem",
+          border: "none",
+          borderRadius: "4px",
+          cursor: "pointer"
+        }}
+      >
+        Delete All Tickets
+      </button>
 
       {loading && <p>Loading tickets…</p>}
       {error && <p style={{ color: "red" }}>{error}</p>}
@@ -66,12 +116,13 @@ export default function Dashboard() {
               <th style={thStyle}>Event</th>
               <th style={thStyle}>Status</th>
               <th style={thStyle}>Scanned At</th>
+              <th style={thStyle}>Actions</th>
             </tr>
           </thead>
           <tbody>
             {tickets.length === 0 ? (
               <tr>
-                <td colSpan={7} style={{ textAlign: "center", padding: "1rem" }}>
+                <td colSpan={8} style={{ textAlign: "center", padding: "1rem" }}>
                   No tickets found
                 </td>
               </tr>
@@ -88,6 +139,20 @@ export default function Dashboard() {
                     {ticket.timestamp
                       ? new Date(ticket.timestamp).toLocaleString()
                       : "—"}
+                  </td>
+                  <td style={tdStyle}>
+                    <button
+                      onClick={() => handleEdit(ticket)}
+                      style={{ marginRight: "0.5rem" }}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => handleDelete(ticket.ticket_id)}
+                      style={{ color: "red" }}
+                    >
+                      Delete
+                    </button>
                   </td>
                 </tr>
               ))
