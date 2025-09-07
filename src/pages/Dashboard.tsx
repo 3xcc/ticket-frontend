@@ -20,7 +20,7 @@ export default function Dashboard() {
   useEffect(() => {
     const fetchTickets = async () => {
       try {
-        const response = await axios.get("/tickets/all");
+        const response = await axios.get("https://ticket-backend-jdpp.onrender.com/tickets/all");
         console.log("Fetched tickets:", response.data);
         const data = Array.isArray(response.data) ? response.data : [];
         setTickets(data);
@@ -37,7 +37,7 @@ export default function Dashboard() {
 
   const handleExport = async () => {
     try {
-      const res = await axios.get("/tickets/export");
+      const res = await axios.get("https://ticket-backend-jdpp.onrender.com/tickets/export");
       const blob = new Blob([JSON.stringify(res.data, null, 2)], {
         type: "application/json",
       });
