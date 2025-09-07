@@ -32,6 +32,23 @@ export default function Dashboard() {
     fetchTickets();
   }, []);
 
+  const handleExport = async () => {
+    try {
+      const res = await axios.get("/tickets/export");
+      const blob = new Blob([JSON.stringify(res.data, null, 2)], {
+        type: "application/json",
+      });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "tickets.json";
+      link.click();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error("Export failed:", err);
+    }
+  };
+
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-4">Ticket Dashboard</h1>
@@ -40,6 +57,13 @@ export default function Dashboard() {
         <p>Loading tickets...</p>
       ) : (
         <div className="overflow-x-auto">
+          <button
+            onClick={handleExport}
+            className="mb-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+          >
+            Export Tickets
+          </button>
+
           <table className="min-w-full table-auto border-collapse">
             <thead>
               <tr className="bg-gray-100 text-left">
@@ -63,3 +87,4 @@ export default function Dashboard() {
     </div>
   );
 }
+
