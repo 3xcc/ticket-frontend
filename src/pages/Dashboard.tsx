@@ -37,7 +37,7 @@ export default function Dashboard() {
 
   const handleExport = async () => {
     try {
-      const res = await axios.get("https://ticket-backend-jdpp.onrender.com/tickets/export");
+      const res = await axios.get("https://ticket-backend-jdpp.onrender.com/export");
       const blob = new Blob([JSON.stringify(res.data, null, 2)], {
         type: "application/json",
       });
