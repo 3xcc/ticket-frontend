@@ -21,9 +21,12 @@ export default function Dashboard() {
     const fetchTickets = async () => {
       try {
         const response = await axios.get("/tickets/all");
-        setTickets(response.data);
+        console.log("Fetched tickets:", response.data);
+        const data = Array.isArray(response.data) ? response.data : [];
+        setTickets(data);
       } catch (error) {
         console.error("Failed to fetch tickets:", error);
+        setTickets([]);
       } finally {
         setLoading(false);
       }
@@ -87,4 +90,3 @@ export default function Dashboard() {
     </div>
   );
 }
-
