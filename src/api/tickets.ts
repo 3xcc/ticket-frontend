@@ -1,36 +1,20 @@
-const API_BASE = import.meta.env.VITE_API_BASE?.replace(/\/$/, "") || ""
+import { apiFetch } from "../utils/api";
 
 export async function createTicket(data: {
-  name: string
-  id_card_number: string
-  date_of_birth: string
-  phone_number: string
+  name: string;
+  id_card_number: string;
+  date_of_birth: string;
+  phone_number: string;
 }) {
-  const res = await fetch(`${API_BASE}/tickets`, {
+  return apiFetch("/tickets", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  })
-
-  if (!res.ok) {
-    const errorText = await res.text()
-    throw new Error(`Ticket creation failed: ${res.status} ${errorText}`)
-  }
-
-  return res.json()
+    body: JSON.stringify(data)
+  });
 }
 
 export async function validateTicket(payload: string) {
-  const res = await fetch(`${API_BASE}/validate_ticket`, {
+  return apiFetch("/validate_ticket", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ payload }),
-  })
-
-  if (!res.ok) {
-    const errorText = await res.text()
-    throw new Error(`Validation failed: ${res.status} ${errorText}`)
-  }
-
-  return res.json()
+    body: JSON.stringify({ payload })
+  });
 }

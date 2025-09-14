@@ -1,4 +1,5 @@
 // src/utils/auth.ts
+import { apiFetch } from "./api";
 
 export const TOKEN_KEY = "auth_token";
 
@@ -28,20 +29,17 @@ export function clearToken() {
  * Calls backend /admin/login and stores token
  */
 export async function login(email: string, password: string) {
-  const res = await fetch("https://ticket-backend-jdpp.onrender.com/admin/login", {
+  const data = await apiFetch("/admin/login", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email, password })
   });
 
-  if (!res.ok) {
-    throw new Error("Login failed");
-  }
-
-  const data = await res.json();
-
   // Store token
-  saveToken(data.access_token);
+  if (data?.access_token) {
+    saveToken(data.access_token);
+  } else {
+    throw new Error("Login failed: No access token returned");
+  }
 
   // Return full response (so we can use role for redirect)
   return data;

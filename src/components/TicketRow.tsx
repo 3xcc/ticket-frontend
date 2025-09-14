@@ -1,7 +1,7 @@
 // src/components/TicketRow.tsx
-import axios from "axios";
 import { FallbackCell } from "./FallbackCell";
 import { StatusBadge } from "./StatusBadge";
+import { apiFetch } from "../utils/api";
 
 interface Ticket {
   ticket_id: string;
@@ -17,7 +17,9 @@ interface Ticket {
 export const TicketRow = ({ ticket }: { ticket: Ticket }) => {
   const handleDelete = async () => {
     try {
-      await axios.delete(`https://ticket-backend-jdpp.onrender.com/tickets/${ticket.ticket_id}`);
+      await apiFetch(`/tickets/${ticket.ticket_id}`, {
+        method: "DELETE"
+      });
       window.location.reload(); // or trigger a refetch
     } catch (err) {
       console.error("Delete failed:", err);
@@ -27,7 +29,10 @@ export const TicketRow = ({ ticket }: { ticket: Ticket }) => {
   const handleEdit = async () => {
     const updated = { name: "Updated Name" }; // Replace with form logic later
     try {
-      await axios.put(`https://ticket-backend-jdpp.onrender.com/tickets/${ticket.ticket_id}`, updated);
+      await apiFetch(`/tickets/${ticket.ticket_id}`, {
+        method: "PUT",
+        body: JSON.stringify(updated)
+      });
       window.location.reload();
     } catch (err) {
       console.error("Edit failed:", err);
@@ -44,8 +49,18 @@ export const TicketRow = ({ ticket }: { ticket: Ticket }) => {
       <FallbackCell value={ticket.event} />
       <td><StatusBadge status={ticket.status} /></td>
       <td className="px-4 py-2">
-        <button onClick={handleEdit} className="text-blue-600 hover:underline text-sm mr-2">Edit</button>
-        <button onClick={handleDelete} className="text-red-600 hover:underline text-sm">Delete</button>
+        <button
+          onClick={handleEdit}
+          className="text-blue-600 hover:underline text-sm mr-2"
+        >
+          Edit
+        </button>
+        <button
+          onClick={handleDelete}
+          className="text-red-600 hover:underline text-sm"
+        >
+          Delete
+        </button>
       </td>
     </tr>
   );

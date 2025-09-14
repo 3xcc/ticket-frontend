@@ -1,6 +1,7 @@
+// src/pages/Dashboard.tsx
 import { useEffect, useState } from "react";
-import axios from "axios";
 import { TicketRow } from "../components/TicketRow";
+import { apiFetch } from "../utils/api";
 
 interface Ticket {
   ticket_id: string;
@@ -20,10 +21,8 @@ export default function Dashboard() {
   useEffect(() => {
     const fetchTickets = async () => {
       try {
-        const response = await axios.get("https://ticket-backend-jdpp.onrender.com/tickets/all");
-        console.log("Fetched tickets:", response.data);
-        const data = Array.isArray(response.data) ? response.data : [];
-        setTickets(data);
+        const data = await apiFetch("/tickets/all");
+        setTickets(Array.isArray(data) ? data : []);
       } catch (error) {
         console.error("Failed to fetch tickets:", error);
         setTickets([]);
@@ -37,8 +36,8 @@ export default function Dashboard() {
 
   const handleExport = async () => {
     try {
-      const res = await axios.get("https://ticket-backend-jdpp.onrender.com/export");
-      const blob = new Blob([JSON.stringify(res.data, null, 2)], {
+      const data = await apiFetch("/export");
+      const blob = new Blob([JSON.stringify(data, null, 2)], {
         type: "application/json",
       });
       const url = URL.createObjectURL(blob);
