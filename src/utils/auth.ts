@@ -26,11 +26,15 @@ export function clearToken() {
 
 /**
  * Login with email/password
- * Calls backend /admin/login and stores token
+ * Calls backend /api/admin/login and stores token
  */
 export async function login(email: string, password: string) {
-  const data = await apiFetch("/admin/login", {
+  // Ensure we hit the correct backend route
+  const data = await apiFetch("/api/admin/login", {
     method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
     body: JSON.stringify({ email, password })
   });
 
@@ -38,7 +42,7 @@ export async function login(email: string, password: string) {
   if (data?.access_token) {
     saveToken(data.access_token);
   } else {
-    throw new Error("Login failed: No access token returned");
+    throw new Error(data?.detail || "Login failed: No access token returned");
   }
 
   // Return full response (so we can use role for redirect)
