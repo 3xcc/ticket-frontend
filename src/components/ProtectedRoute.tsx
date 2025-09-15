@@ -1,6 +1,7 @@
 import { type ReactElement, useEffect, useState } from "react";
 import { Navigate, useLocation } from "react-router-dom";
-import { getToken } from "../utils/auth";
+import { getToken, clearToken } from "../utils/auth";
+import { apiFetch } from "../utils/api";
 
 interface ProtectedRouteProps {
   children: ReactElement;
@@ -11,18 +12,40 @@ export default function ProtectedRoute({ children, allowedRoles }: ProtectedRout
   const token = getToken();
   const location = useLocation();
   const [userRole, setUserRole] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (token) {
+    const init = async () => {
+      if (!token) {
+        setLoading(false);
+        return;
+      }
+
       try {
-        // Decode JWT payload to get role
+        // Decode locally for instant role
         const payload = JSON.parse(atob(token.split(".")[1]));
         setUserRole(payload.role || null);
-      } catch {
+
+        // Validate token & role with backend
+        const me = await apiFetch("/admin/me");
+        if (me?.role) {
+          setUserRole(me.role);
+        }
+      } catch (err) {
+        console.error("Token validation failed:", err);
+        clearToken();
         setUserRole(null);
+      } finally {
+        setLoading(false);
       }
-    }
+    };
+
+    init();
   }, [token]);
+
+  if (loading) {
+    return <p>Checking access…</p>;
+  }
 
   // No token? Kick to login
   if (!token) {

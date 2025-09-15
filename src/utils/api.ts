@@ -1,26 +1,38 @@
-const API_BASE = import.meta.env.VITE_API_BASE?.replace(/\/$/, "") || "";
+// src/utils/api.ts
+import { getToken } from "./auth";
 
-/**
- * apiFetch - wrapper around fetch that automatically attaches
- * the Authorization header if a token is present in localStorage.
- */
+// Base URL comes from .env — no hardcoding
+const API_BASE = import.meta.env.VITE_API_URL?.replace(/\/$/, "") || "";
+
 export async function apiFetch(path: string, options: RequestInit = {}) {
-  const token = localStorage.getItem("auth_token");
+  // Ensure path starts with /api
+  const normalisedPath = path.startsWith("/api") ? path : `/api${path}`;
 
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
     ...(options.headers as Record<string, string> || {}),
-    ...(token ? { Authorization: `Bearer ${token}` } : {})
   };
 
-  const res = await fetch(`${API_BASE}${path}`, {
+  // Attach token if available
+  const token = getToken();
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
+
+  const res = await fetch(`${API_BASE}${normalisedPath}`, {
     ...options,
-    headers
+    headers,
   });
 
   if (!res.ok) {
-    const errorText = await res.text();
-    throw new Error(`API error: ${res.status} ${errorText}`);
+    let errMsg = res.statusText;
+    try {
+      const errData = await res.json();
+      errMsg = errData.detail || errMsg;
+    } catch {
+      // ignore JSON parse errors
+    }
+    throw new Error(`API error: ${res.status} ${errMsg}`);
   }
 
   return res.json();

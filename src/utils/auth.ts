@@ -1,4 +1,3 @@
-// src/utils/auth.ts
 import { apiFetch } from "./api";
 
 export const TOKEN_KEY = "auth_token";
@@ -29,22 +28,17 @@ export function clearToken() {
  * Calls backend /api/admin/login and stores token
  */
 export async function login(email: string, password: string) {
-  // Ensure we hit the correct backend route
-  const data = await apiFetch("/api/admin/login", {
+  // Pass relative path — apiFetch will prepend /api automatically
+  const data = await apiFetch("/admin/login", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
     body: JSON.stringify({ email, password })
   });
 
-  // Store token
   if (data?.access_token) {
     saveToken(data.access_token);
   } else {
     throw new Error(data?.detail || "Login failed: No access token returned");
   }
 
-  // Return full response (so we can use role for redirect)
   return data;
 }

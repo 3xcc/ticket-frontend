@@ -1,6 +1,6 @@
 // src/pages/Home.tsx
 import { useState } from "react";
-import { createTicket } from "../api/tickets";
+import { apiFetch } from "../utils/api";
 
 export default function Home() {
   const [payload, setPayload] = useState({
@@ -20,7 +20,12 @@ export default function Home() {
     setLoading(true);
 
     try {
-      await createTicket(payload);
+      // POST {VITE_API_URL}/api/tickets
+      await apiFetch("/tickets", {
+        method: "POST",
+        body: JSON.stringify(payload)
+      });
+
       setSuccess("Ticket created successfully");
       setPayload({
         name: "",

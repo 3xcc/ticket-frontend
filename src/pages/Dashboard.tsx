@@ -25,6 +25,7 @@ export default function Dashboard() {
       setLoading(true);
       setError(null);
       try {
+        // This will resolve to `${VITE_API_URL}/api/tickets/all`
         const data = await apiFetch("/tickets/all");
         setTickets(Array.isArray(data) ? data : []);
       } catch (err: any) {
@@ -41,7 +42,8 @@ export default function Dashboard() {
   const handleExport = async () => {
     setExportError(null);
     try {
-      const data = await apiFetch("/export");
+      // Make sure this endpoint exists in backend as `/api/export`
+      const data = await apiFetch("/admin/export");
       const blob = new Blob([JSON.stringify(data, null, 2)], {
         type: "application/json",
       });

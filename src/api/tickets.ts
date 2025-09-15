@@ -12,9 +12,12 @@ export async function createTicket(data: {
   });
 }
 
-export async function validateTicket(payload: string) {
-  return apiFetch("/validate_ticket", {
-    method: "POST",
-    body: JSON.stringify({ payload })
+/**
+ * Validate (scan) a ticket by ID.
+ * Calls backend /api/scan/{ticketId} — requires scanner/admin role.
+ */
+export async function validateTicket(ticketId: string) {
+  return apiFetch(`/scan/${ticketId}`, {
+    method: "POST"
   });
 }
