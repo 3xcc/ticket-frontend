@@ -21,10 +21,10 @@ export const TicketRow = ({ ticket }: { ticket: Ticket }) => {
   const handleDelete = async () => {
     setError(null);
     try {
-      await apiFetch(`/tickets/${ticket.ticket_id}`, {
+      await apiFetch(`/admin/tickets/${ticket.ticket_id}`, {
         method: "DELETE",
       });
-      window.location.reload(); // or trigger a refetch
+      window.location.reload();
     } catch (err: any) {
       setError(err.message || "Delete failed");
     }
@@ -34,7 +34,7 @@ export const TicketRow = ({ ticket }: { ticket: Ticket }) => {
     setError(null);
     const updated = { name: "Updated Name" }; // Replace with form logic later
     try {
-      await apiFetch(`/tickets/${ticket.ticket_id}`, {
+      await apiFetch(`/admin/tickets/${ticket.ticket_id}`, {
         method: "PUT",
         body: JSON.stringify(updated),
       });
@@ -42,7 +42,7 @@ export const TicketRow = ({ ticket }: { ticket: Ticket }) => {
     } catch (err: any) {
       setError(err.message || "Edit failed");
     }
-  };
+};
 
   return (
     <>
