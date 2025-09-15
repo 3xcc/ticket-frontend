@@ -26,7 +26,7 @@ export default function Scan() {
       return
     }
 
-    const ticketId = qrPayload.trim() // ✅ Clean the payload
+    const ticketId = qrPayload.trim()
     console.log("Scanned ticket ID:", ticketId)
 
     setLoading(true)
@@ -34,12 +34,13 @@ export default function Scan() {
     setTicket(null)
 
     try {
-      const data = await validateTicket(ticketId) // ✅ Send clean ID
+      const data = await validateTicket(ticketId)
       console.log("Validation response:", data)
       setTicket(data)
-    } catch (e) {
-      console.error("Validation error:", e)
-      setError('Invalid or expired ticket')
+    } catch (err: any) {
+      console.error("Validation error:", err)
+      // Show backend-provided message if available
+      setError(err?.message || "Invalid or expired ticket")
     } finally {
       setLoading(false)
     }

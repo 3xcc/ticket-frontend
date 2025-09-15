@@ -1,121 +1,92 @@
-import { useState } from "react"
-import { createTicket } from "../api/tickets"
-
-function calculateAge(dob: string): number | null {
-  const birthDate = new Date(dob)
-  if (isNaN(birthDate.getTime())) return null
-
-  const today = new Date()
-  let age = today.getFullYear() - birthDate.getFullYear()
-  const m = today.getMonth() - birthDate.getMonth()
-  if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
-    age--
-  }
-  return age
-}
+// src/pages/Home.tsx
+import { useState } from "react";
+import { createTicket } from "../api/tickets";
 
 export default function Home() {
-  const [formData, setFormData] = useState({
+  const [payload, setPayload] = useState({
     name: "",
     id_card_number: "",
     date_of_birth: "",
-    phone_number: "",
-    event: "", // ✅ Added event field
-  })
-
-  const [qrCode, setQrCode] = useState<string | null>(null)
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value })
-  }
+    phone_number: ""
+  });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault()
-  try {
-    const { name, id_card_number, date_of_birth, phone_number, event } = formData
-    const payload = {
-      name,
-      id_card_number,
-      date_of_birth,
-      phone_number,
-      event
-    }
-    const response = await createTicket(payload)
-    setQrCode(response.qr)
-  } catch (err) {
-    console.error("Ticket creation failed:", err)
-  }
-  }
+    e.preventDefault();
+    setError(null);
+    setSuccess(null);
+    setLoading(true);
 
-  const age = calculateAge(formData.date_of_birth)
+    try {
+      await createTicket(payload);
+      setSuccess("Ticket created successfully");
+      setPayload({
+        name: "",
+        id_card_number: "",
+        date_of_birth: "",
+        phone_number: ""
+      });
+    } catch (err: any) {
+      setError(err?.message || "Failed to create ticket");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <div style={{ padding: "2rem" }}>
-      <h2>Create Ticket</h2>
-      <form
-        onSubmit={handleSubmit}
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          gap: "1rem",
-          maxWidth: "400px",
-        }}
-      >
+    <div className="p-6 max-w-lg mx-auto">
+      <h1 className="text-2xl font-bold mb-4">Home</h1>
+
+      {error && <p className="mb-4 text-red-600">{error}</p>}
+      {success && <p className="mb-4 text-green-600">{success}</p>}
+
+      <form onSubmit={handleSubmit} className="space-y-4">
         <input
           type="text"
-          name="name"
-          placeholder="Full Name"
-          value={formData.name}
-          onChange={handleChange}
+          placeholder="Name"
+          value={payload.name}
+          onChange={(e) => setPayload({ ...payload, name: e.target.value })}
+          className="border p-2 w-full rounded"
           required
         />
         <input
           type="text"
-          name="id_card_number"
           placeholder="ID Card Number"
-          value={formData.id_card_number}
-          onChange={handleChange}
+          value={payload.id_card_number}
+          onChange={(e) =>
+            setPayload({ ...payload, id_card_number: e.target.value })
+          }
+          className="border p-2 w-full rounded"
           required
         />
         <input
           type="date"
-          name="date_of_birth"
-          placeholder="Date of Birth"
-          value={formData.date_of_birth}
-          onChange={handleChange}
-          required
+          value={payload.date_of_birth}
+          onChange={(e) =>
+            setPayload({ ...payload, date_of_birth: e.target.value })
+          }
+          className="border p-2 w-full rounded"
         />
-        {formData.date_of_birth && age !== null && (
-          <div style={{ fontSize: "0.9rem", color: "#555" }}>
-            DOB: {formData.date_of_birth} (Age: {age})
-          </div>
-        )}
         <input
           type="tel"
-          name="phone_number"
           placeholder="Phone Number"
-          value={formData.phone_number}
-          onChange={handleChange}
-          required
-        />
-        <input
-          type="text"
-          name="event"
-          placeholder="Event Name"
-          value={formData.event}
-          onChange={handleChange}
-          required
+          value={payload.phone_number}
+          onChange={(e) =>
+            setPayload({ ...payload, phone_number: e.target.value })
+          }
+          className="border p-2 w-full rounded"
         />
 
-        <button type="submit">Generate QR</button>
+        <button
+          type="submit"
+          disabled={loading}
+          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
+        >
+          {loading ? "Creating..." : "Create Ticket"}
+        </button>
       </form>
-
-      {qrCode && (
-        <div style={{ marginTop: "2rem" }}>
-          <h3>Your Ticket QR:</h3>
-          <img src={qrCode} alt="Ticket QR" style={{ width: "200px" }} />
-        </div>
-      )}
     </div>
-  )
+  );
 }

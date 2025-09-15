@@ -17,14 +17,18 @@ interface Ticket {
 export default function Dashboard() {
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [exportError, setExportError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchTickets = async () => {
+      setLoading(true);
+      setError(null);
       try {
         const data = await apiFetch("/tickets/all");
         setTickets(Array.isArray(data) ? data : []);
-      } catch (error) {
-        console.error("Failed to fetch tickets:", error);
+      } catch (err: any) {
+        setError(err.message || "Failed to fetch tickets");
         setTickets([]);
       } finally {
         setLoading(false);
@@ -35,6 +39,7 @@ export default function Dashboard() {
   }, []);
 
   const handleExport = async () => {
+    setExportError(null);
     try {
       const data = await apiFetch("/export");
       const blob = new Blob([JSON.stringify(data, null, 2)], {
@@ -46,8 +51,8 @@ export default function Dashboard() {
       link.download = "tickets.json";
       link.click();
       URL.revokeObjectURL(url);
-    } catch (err) {
-      console.error("Export failed:", err);
+    } catch (err: any) {
+      setExportError(err.message || "Export failed");
     }
   };
 
@@ -55,9 +60,10 @@ export default function Dashboard() {
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-4">Ticket Dashboard</h1>
 
-      {loading ? (
-        <p>Loading tickets...</p>
-      ) : (
+      {loading && <p>Loading tickets...</p>}
+      {error && <p className="mb-4 text-red-600">{error}</p>}
+
+      {!loading && !error && (
         <div className="overflow-x-auto">
           <button
             onClick={handleExport}
@@ -65,6 +71,9 @@ export default function Dashboard() {
           >
             Export Tickets
           </button>
+          {exportError && (
+            <p className="mb-4 text-red-600">{exportError}</p>
+          )}
 
           <table className="min-w-full table-auto border-collapse">
             <thead>
